@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Order</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@400;700&family=Inter:wght@400;500&family=DM+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#1b4a8f;--ink:#fff;--soft:#c9d6ee;--line:rgba(255,255,255,.35);--field:#163e78;--accent:#ffd9a0}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.5 Inter,system-ui,sans-serif}
+main{max-width:640px;margin:0 auto;padding:40px 22px 80px}
+h1,h2,.item b{font-family:Gaegu,cursive;font-weight:700;letter-spacing:.02em}
+h1{font-size:3rem;margin:0 0 8px;line-height:1}
+h2{font-size:2rem;margin:0 0 4px}
+p{margin:0 0 12px;color:var(--soft)}
+section{padding:28px 0;border-top:1px dashed var(--line)}
+section:first-of-type{border-top:0}
+.locked{opacity:.4;pointer-events:none}
+a.btn,label.btn,button{font:inherit;background:var(--ink);color:var(--bg);border:0;border-radius:999px;padding:12px 22px;cursor:pointer;text-decoration:none;display:inline-block;font-weight:500}
+button:disabled{opacity:.5;cursor:not-allowed}
+a:focus-visible,button:focus-visible,input:focus-visible,label:focus-within{outline:3px solid var(--accent);outline-offset:3px}
+label.check{display:flex;gap:10px;align-items:flex-start;margin-top:18px;color:var(--ink)}
+label.check input{width:20px;height:20px;margin-top:2px;accent-color:var(--accent)}
+input[type=text]{width:100%;background:var(--field);border:1px solid var(--line);border-radius:10px;color:var(--ink);font:inherit;padding:12px 14px}
+.item{display:grid;grid-template-columns:1fr auto;gap:2px 16px;align-items:center;padding:14px 0}
+.item b{font-size:1.9rem;line-height:1.1}
+.item small{color:var(--soft);grid-column:1}
+.price{font-family:'DM Mono',monospace;color:var(--soft);text-align:right}
+.qty{grid-column:2;grid-row:2;display:flex;gap:10px;align-items:center;justify-self:end}
+.qty button{width:34px;height:34px;padding:0;font-size:1.2rem;background:transparent;color:var(--ink);border:1px solid var(--line)}
+.qty span{min-width:1.2em;text-align:center;font-family:'DM Mono',monospace}
+.venmo{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;color:var(--ink)}
+.rule{border-top:1px dashed var(--line);margin:6px 0}
+#preview{display:none;width:160px;height:160px;object-fit:cover;border-radius:50%;margin:14px 0 0;border:2px solid var(--ink)}
+input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
+.total{font-family:'DM Mono',monospace;font-size:1.1rem;display:flex;justify-content:space-between;margin:16px 0}
+#msg{min-height:1.5em;color:var(--accent)}
+.receipt{background:#fff;color:#14305c;border-radius:14px;padding:24px;text-align:center;margin:16px 0}
+.receipt img{width:140px;height:140px;border-radius:50%;object-fit:cover;border:3px solid #1b4a8f}
+.receipt h3{font-family:Gaegu,cursive;font-size:2.2rem;margin:8px 0 0;line-height:1}
+.receipt .meta,.receipt li,.receipt .tot{font-family:'DM Mono',monospace;font-size:.9rem}
+.receipt ul{list-style:none;padding:0;margin:14px 0;border-top:1px dashed #9db3d8;border-bottom:1px dashed #9db3d8}
+.receipt li{padding:6px 0}.receipt .tot{display:flex;justify-content:space-between}
+.receipt .note{font-size:.85rem;color:#4a6490;margin-top:12px}
+@media (prefers-reduced-motion:no-preference){.unlock{animation:pop .4s ease}@keyframes pop{from{opacity:.4;transform:translateY(6px)}}}
+</style>
+</head>
+<body>
+<main>
+  <h1>order here</h1>
+  <p>Three quick steps: make your aura, build your order, then take a selfie to get your receipt. Pay with Venmo after.</p>
+
+  <section id="s1">
+    <h2>1. make your aura</h2>
+    <p>Create your aura, then invite 5 friends to make theirs. Invite 5 and you get a $25 gift card.</p>
+    <a class="btn" href="https://comparewithmesf.com" target="_blank" rel="noopener">Create my aura</a>
+    <label class="check"><input type="checkbox" id="aura"> <span>I created my aura and invited 5 friends. I know you'll check.</span></label>
+  </section>
+
+  <section id="s2" class="locked" aria-disabled="true">
+    <h2>2. your order</h2>
+    <p>Add your name and pick your items.</p>
+    <input type="text" id="name" placeholder="Your name" autocomplete="given-name" maxlength="60">
+
+    <div id="menu" style="margin-top:20px"></div>
+    <div class="total"><span>Total</span><span id="total">$0.00</span></div>
+    <p class="venmo">Pay with Venmo: <b>@amber-le-2103</b>. Your pay button appears with your receipt.</p>
+  </section>
+
+  <section id="s3" class="locked" aria-disabled="true">
+    <h2>3. take a selfie</h2>
+    <p>Your selfie goes on your receipt. Tap the button to open your front camera.</p>
+    <p>
+      <label class="btn" for="selfie" tabindex="0" id="selfieBtn">Open camera</label>
+      <input type="file" id="selfie" accept="image/*" capture="user">
+    </p>
+    <img id="preview" alt="Your selfie" style="margin-bottom:18px">
+    <button id="send" disabled>Place order and get receipt</button>
+    <p id="msg" role="status"></p>
+  </section>
+</main>
+
+<script>
+const MENU=[
+ {n:'roasted persimmon matcha latte',d:'homemade persimmon syrup, salted vanilla cold foam',p:3},
+ {n:'banana bread matcha latte',d:'cinnamon banana milk, salted vanilla cold foam',p:3},
+ {n:'creamy peach oolong tea',d:'oolong cold brew, preserved peaches, coconut milk, sago',p:2},
+ {n:'thai tea martini',d:'thai tea, vodka, condensed milk (21+, price at pickup)',p:null},
+ 'rule',
+ {n:'matcha banana pudding',d:'',p:1.5},
+ {n:'fig & brie autumn puff',d:'',p:1.5}
+];
+const qty={};let selfieData='';
+const $=id=>document.getElementById(id);
+const menu=$('menu');
+MENU.forEach((m,i)=>{
+  if(m==='rule'){menu.insertAdjacentHTML('beforeend','<div class="rule"></div>');return;}
+  qty[i]=0;
+  menu.insertAdjacentHTML('beforeend',`<div class="item"><b>${m.n}</b><span class="price">${m.p==null?'':'$'+m.p.toFixed(2)}</span>
+  <small>${m.d}</small><div class="qty"><button type="button" aria-label="Remove one ${m.n}" data-i="${i}" data-d="-1">−</button><span id="q${i}">0</span><button type="button" aria-label="Add one ${m.n}" data-i="${i}" data-d="1">+</button></div></div>`);
+});
+menu.addEventListener('click',e=>{
+  const b=e.target.closest('button[data-i]');if(!b)return;
+  const i=b.dataset.i;qty[i]=Math.max(0,qty[i]+Number(b.dataset.d));
+  $('q'+i).textContent=qty[i];update();
+});
+const total=()=>Object.keys(qty).reduce((s,i)=>s+qty[i]*(MENU[i].p||0),0);
+function update(){
+  $('total').textContent='$'+total().toFixed(2);
+  const ok=$('name').value.trim()&&selfieData&&Object.values(qty).some(v=>v>0);
+  $('send').disabled=!ok;
+}
+$('aura').addEventListener('change',e=>{
+  ['s2','s3'].forEach(id=>{const el=$(id);el.classList.toggle('locked',!e.target.checked);
+    el.setAttribute('aria-disabled',!e.target.checked);if(e.target.checked)el.classList.add('unlock');});
+});
+$('name').addEventListener('input',update);
+$('selfieBtn').addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();$('selfie').click();}});
+$('selfie').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const img=new Image();img.onload=()=>{
+    const max=900,r=Math.min(1,max/Math.max(img.width,img.height));
+    const c=document.createElement('canvas');c.width=img.width*r;c.height=img.height*r;
+    c.getContext('2d').drawImage(img,0,0,c.width,c.height);
+    selfieData=c.toDataURL('image/jpeg',.8);
+    $('preview').src=selfieData;$('preview').style.display='block';
+    $('selfieBtn').textContent='Retake selfie';update();
+  };
+  img.src=URL.createObjectURL(f);
+});
+$('send').addEventListener('click',async()=>{
+  $('send').disabled=true;$('msg').textContent='Sending…';
+  const items=Object.keys(qty).filter(i=>qty[i]>0).map(i=>({name:MENU[i].n,qty:qty[i],price:MENU[i].p||0}));
+  const name=$('name').value.trim(),tot=total();
+  try{
+    const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({name,items,total:tot,auraConfirmed:$('aura').checked,selfie:selfieData})});
+    const j=await r.json().catch(()=>({}));
+    if(!r.ok)throw new Error(j.error||'The order service is not set up yet (error '+r.status+').');
+    showReceipt({name,items,tot,id:j.orderId,selfie:selfieData,when:new Date().toLocaleString()});
+  }catch(err){$('msg').textContent=err instanceof TypeError?'Could not reach the order service. Open the deployed site, not the local file.':err.message;$('send').disabled=false;}
+});
+const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function showReceipt(o){
+  $('s3').remove();
+  const note=encodeURIComponent('Order #'+o.id+' '+o.name);
+  const venmo=o.tot>0?`<p style="margin-top:18px"><a class="btn" href="https://venmo.com/amber-le-2103?txn=pay&audience=private&amount=${o.tot.toFixed(2)}&note=${note}" target="_blank" rel="noopener">Pay $${o.tot.toFixed(2)} on Venmo</a></p>`:'';
+  $('s2').innerHTML=`<h2>order placed</h2><div class="receipt"><img src="${o.selfie}" alt="Your selfie">
+  <h3>${esc(o.name)}</h3><div class="meta">order #${o.id}<br>${esc(o.when)}</div>
+  <ul>${o.items.map(i=>`<li>${i.qty} × ${esc(i.name)}</li>`).join('')}</ul>
+  <div class="tot"><span>Total</span><span>$${o.tot.toFixed(2)}</span></div>
+  <div class="note">Venmo @amber-le-2103 and include your order number. Show this receipt to pick up. Aura invites get checked before your gift card is sent.</div></div>
+  ${venmo}<button id="save">Save receipt as image</button>`;
+  $('save').onclick=()=>saveImage(o);
+}
+async function saveImage(o){
+  await Promise.all([document.fonts.load('700 40px Gaegu'),document.fonts.load('16px "DM Mono"')]);
+  const W=700,H=620+o.items.length*34,c=document.createElement('canvas');c.width=W;c.height=H;
+  const x=c.getContext('2d');x.fillStyle='#1b4a8f';x.fillRect(0,0,W,H);
+  x.fillStyle='#fff';x.beginPath();x.roundRect(30,30,W-60,H-60,24);x.fill();
+  const img=new Image();img.src=o.selfie;await img.decode();
+  x.save();x.beginPath();x.arc(W/2,150,80,0,7);x.clip();
+  const m=Math.min(img.width,img.height);x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,W/2-80,70,160,160);x.restore();
+  x.fillStyle='#14305c';x.textAlign='center';
+  x.font='700 52px Gaegu';x.fillText(o.name,W/2,290);
+  x.font='18px "DM Mono"';x.fillText('order #'+o.id+'  '+o.when,W/2,325);
+  x.textAlign='left';let y=380;
+  o.items.forEach(i=>{x.fillText(i.qty+' × '+i.name,70,y);y+=34;});
+  y+=20;x.fillText('Total',70,y);x.textAlign='right';x.fillText('$'+o.tot.toFixed(2),W-70,y);
+  x.textAlign='center';x.fillText('Venmo @amber-le-2103',W/2,y+50);
+  const a=document.createElement('a');a.download='receipt-'+o.id+'.png';a.href=c.toDataURL('image/png');a.click();
+}
+</script>
+</body>
+</html>
