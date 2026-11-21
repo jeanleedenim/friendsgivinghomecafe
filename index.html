@@ -152,7 +152,7 @@ function showReceipt(o){
   <ul>${o.items.map(i=>`<li>${i.qty} × ${esc(i.name)}</li>`).join('')}</ul>
   <div class="tot"><span>Total</span><span>$${o.tot.toFixed(2)}</span></div>
   <div class="note">Show this receipt to pick up your order. Your aura gets checked before your gift card is sent.</div>
-  <div class="note">Pay on Venmo: <a href="https://venmo.com/u/amber-le-2103" target="_blank" rel="noopener">venmo.com/u/amber-le-2103</a><br>Include order #${o.id} in the note.</div></div>`;
+  <div class="note">Pay on Venmo: <a href="https://venmo.com/u/amber-le-2103" target="_blank" rel="noopener">venmo.com/u/amber-le-2103</a></div></div>`;
 }
 </script>
 </body>
