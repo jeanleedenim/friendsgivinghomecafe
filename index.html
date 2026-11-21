@@ -32,7 +32,6 @@ input[type=text]{width:100%;background:var(--field);border:1px solid var(--line)
 .qty{grid-column:2;grid-row:2;display:flex;gap:10px;align-items:center;justify-self:end}
 .qty button{width:34px;height:34px;padding:0;font-size:1.2rem;background:transparent;color:var(--ink);border:1px solid var(--line)}
 .qty span{min-width:1.2em;text-align:center;font-family:'DM Mono',monospace}
-.venmo{border:1px dashed var(--line);border-radius:10px;padding:10px 14px;color:var(--ink)}
 .rule{border-top:1px dashed var(--line);margin:6px 0}
 #preview{display:none;width:160px;height:160px;object-fit:cover;border-radius:50%;margin:14px 0 0;border:2px solid var(--ink)}
 input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
@@ -44,6 +43,7 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 .receipt .meta,.receipt li,.receipt .tot{font-family:'DM Mono',monospace;font-size:.9rem}
 .receipt ul{list-style:none;padding:0;margin:14px 0;border-top:1px dashed #9db3d8;border-bottom:1px dashed #9db3d8}
 .receipt li{padding:6px 0}.receipt .tot{display:flex;justify-content:space-between}
+.receipt a{color:#1b4a8f;font-weight:500}
 .receipt .note{font-size:.85rem;color:#4a6490;margin-top:12px}
 @media (prefers-reduced-motion:no-preference){.unlock{animation:pop .4s ease}@keyframes pop{from{opacity:.4;transform:translateY(6px)}}}
 </style>
@@ -55,7 +55,7 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 
   <section id="s1">
     <h2>1. make your aura</h2>
-    <p>Create your aura, then invite 5 friends to make theirs. Invite 5 and you get a $25 gift card.</p>
+    <p>Create your aura, then invite 5 friends to make theirs. Invite 5 and you get a $25 gift card. Gift cards are limited to $500 total.</p>
     <a class="btn" href="https://comparewithmesf.com" target="_blank" rel="noopener">Create my aura</a>
     <label class="check"><input type="checkbox" id="aura"> <span>I created my aura and invited 5 friends. I know you'll check.</span></label>
   </section>
@@ -67,7 +67,7 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 
     <div id="menu" style="margin-top:20px"></div>
     <div class="total"><span>Total</span><span id="total">$0.00</span></div>
-    <p class="venmo">Pay with Venmo: <b>@amber-le-2103</b>. Your pay button appears with your receipt.</p>
+    <p><a class="btn" href="https://venmo.com/u/amber-le-2103" target="_blank" rel="noopener">Pay with Venmo</a></p>
   </section>
 
   <section id="s3" class="locked" aria-disabled="true">
@@ -146,14 +146,13 @@ $('send').addEventListener('click',async()=>{
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function showReceipt(o){
   $('s3').remove();
-  const note=encodeURIComponent('Order #'+o.id+' '+o.name);
-  const venmo=o.tot>0?`<p style="margin-top:18px"><a class="btn" href="https://venmo.com/amber-le-2103?txn=pay&audience=private&amount=${o.tot.toFixed(2)}&note=${note}" target="_blank" rel="noopener">Pay $${o.tot.toFixed(2)} on Venmo</a></p>`:'';
   $('s2').innerHTML=`<h2>order placed</h2><div class="receipt"><img src="${o.selfie}" alt="Your selfie">
   <h3>${esc(o.name)}</h3><div class="meta">order #${o.id}<br>${esc(o.when)}</div>
   <ul>${o.items.map(i=>`<li>${i.qty} × ${esc(i.name)}</li>`).join('')}</ul>
   <div class="tot"><span>Total</span><span>$${o.tot.toFixed(2)}</span></div>
-  <div class="note">Venmo @amber-le-2103 and include your order number. Show this receipt to pick up. Aura invites get checked before your gift card is sent.</div></div>
-  ${venmo}<button id="save">Save receipt as image</button>`;
+  <div class="note">Show this receipt to pick up your order. Aura invites get checked before your gift card is sent.</div>
+  <div class="note">Pay on Venmo: <a href="https://venmo.com/u/amber-le-2103" target="_blank" rel="noopener">venmo.com/u/amber-le-2103</a><br>Include order #${o.id} in the note.</div></div>
+  <button id="save">Save receipt as image</button>`;
   $('save').onclick=()=>saveImage(o);
 }
 async function saveImage(o){
@@ -170,7 +169,7 @@ async function saveImage(o){
   x.textAlign='left';let y=380;
   o.items.forEach(i=>{x.fillText(i.qty+' × '+i.name,70,y);y+=34;});
   y+=20;x.fillText('Total',70,y);x.textAlign='right';x.fillText('$'+o.tot.toFixed(2),W-70,y);
-  x.textAlign='center';x.fillText('Venmo @amber-le-2103',W/2,y+50);
+  x.textAlign='center';x.fillText('venmo.com/u/amber-le-2103',W/2,y+50);
   const a=document.createElement('a');a.download='receipt-'+o.id+'.png';a.href=c.toDataURL('image/png');a.click();
 }
 </script>
