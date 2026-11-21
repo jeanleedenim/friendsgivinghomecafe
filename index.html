@@ -32,6 +32,8 @@ input[type=text]{width:100%;background:var(--field);border:1px solid var(--line)
 .qty{grid-column:2;grid-row:2;display:flex;gap:10px;align-items:center;justify-self:end}
 .qty button{width:34px;height:34px;padding:0;font-size:1.2rem;background:transparent;color:var(--ink);border:1px solid var(--line)}
 .qty span{min-width:1.2em;text-align:center;font-family:'DM Mono',monospace}
+.qty.v{grid-column:1/-1;grid-row:auto;justify-self:end;margin-top:6px}
+.vl{color:var(--soft);font-size:.9rem;margin-right:4px}
 .rule{border-top:1px dashed var(--line);margin:6px 0}
 #preview{display:none;width:160px;height:160px;object-fit:cover;border-radius:50%;margin:14px 0 0;border:2px solid var(--ink)}
 input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
@@ -85,7 +87,7 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
 
 <script>
 const MENU=[
- {n:'banana bread matcha latte',d:'cinnamon banana milk, salted vanilla cold foam',p:3},
+ {n:'banana bread matcha latte',d:'cinnamon banana milk, salted vanilla cold foam',p:3,v:['regular milk','oat milk']},
  {n:'creamy peach oolong tea',d:'oolong cold brew, preserved peaches, coconut milk, sago',p:2},
  {n:'thai tea martini',d:'thai tea, vodka, condensed milk',p:null},
  'rule',
@@ -97,16 +99,17 @@ const $=id=>document.getElementById(id);
 const menu=$('menu');
 MENU.forEach((m,i)=>{
   if(m==='rule'){menu.insertAdjacentHTML('beforeend','<div class="rule"></div>');return;}
-  qty[i]=0;
-  menu.insertAdjacentHTML('beforeend',`<div class="item"><b>${m.n}</b><span class="price">${m.p==null?'':'$'+m.p.toFixed(2)}</span>
-  <small>${m.d}</small><div class="qty"><button type="button" aria-label="Remove one ${m.n}" data-i="${i}" data-d="-1">−</button><span id="q${i}">0</span><button type="button" aria-label="Add one ${m.n}" data-i="${i}" data-d="1">+</button></div></div>`);
+  const vs=m.v||[null];
+  const rows=vs.map((v,k)=>{const key=m.v?i+'-'+k:String(i);qty[key]=0;
+    return `<div class="qty${m.v?' v':''}">${v?`<span class="vl">${v}</span>`:''}<button type="button" aria-label="Remove one ${m.n}${v?' ('+v+')':''}" data-i="${key}" data-d="-1">−</button><span id="q${key}">0</span><button type="button" aria-label="Add one ${m.n}${v?' ('+v+')':''}" data-i="${key}" data-d="1">+</button></div>`;}).join('');
+  menu.insertAdjacentHTML('beforeend',`<div class="item"><b>${m.n}</b><span class="price">${m.p==null?'':'$'+m.p.toFixed(2)}</span><small>${m.d}</small>${rows}</div>`);
 });
 menu.addEventListener('click',e=>{
   const b=e.target.closest('button[data-i]');if(!b)return;
   const i=b.dataset.i;qty[i]=Math.max(0,qty[i]+Number(b.dataset.d));
   $('q'+i).textContent=qty[i];update();
 });
-const total=()=>Object.keys(qty).reduce((s,i)=>s+qty[i]*(MENU[i].p||0),0);
+const total=()=>Object.keys(qty).reduce((s,k)=>s+qty[k]*(MENU[parseInt(k)].p||0),0);
 function update(){
   $('total').textContent='$'+total().toFixed(2);
   const ok=$('name').value.trim()&&selfieData&&Object.values(qty).some(v=>v>0);
@@ -132,7 +135,7 @@ $('selfie').addEventListener('change',e=>{
 });
 $('send').addEventListener('click',async()=>{
   $('send').disabled=true;$('msg').textContent='Sending…';
-  const items=Object.keys(qty).filter(i=>qty[i]>0).map(i=>({name:MENU[i].n,qty:qty[i],price:MENU[i].p||0}));
+  const items=Object.keys(qty).filter(k=>qty[k]>0).map(k=>{const m=MENU[parseInt(k)];return {name:m.n+(k.includes('-')?' ('+m.v[k.split('-')[1]]+')':''),qty:qty[k],price:m.p||0};});
   const name=$('name').value.trim(),tot=total();
   try{
     const r=await fetch('/api/order',{method:'POST',headers:{'Content-Type':'application/json'},
