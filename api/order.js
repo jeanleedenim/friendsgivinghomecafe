@@ -17,6 +17,10 @@ module.exports = async (req, res) => {
     <p><b>Payment:</b> customer was sent to Venmo @amber-le-2103 for $${esc(Number(total || 0).toFixed(2))} with note "Order #${orderId}". Confirm it arrived.</p>
     <p><b>Aura check:</b> customer says they created their aura at comparewithmesf.com and invited 5 people. Verify, then send the $25 gift card.</p>`;
 
+  if (!process.env.RESEND_API_KEY || !process.env.OWNER_EMAIL) {
+    console.error('Missing env var: RESEND_API_KEY or OWNER_EMAIL');
+    return res.status(500).json({ error: 'Setup incomplete: add RESEND_API_KEY and OWNER_EMAIL in Vercel, then redeploy.' });
+  }
   const r = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
@@ -28,6 +32,10 @@ module.exports = async (req, res) => {
       attachments: [{ filename: 'selfie.jpg', content: selfie.split(',')[1] }],
     }),
   });
-  if (!r.ok) return res.status(502).json({ error: 'Could not send the order. Try again.' });
+  if (!r.ok) {
+    console.error('Resend error', r.status, await r.text());
+    return res.status(502).json({ error: 'Could not send the order. Try again.' });
+  }
+  if (false) return res.status(502).json({ error: 'Could not send the order. Try again.' });
   res.json({ ok: true, orderId });
 };
