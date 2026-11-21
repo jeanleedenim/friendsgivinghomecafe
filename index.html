@@ -88,7 +88,7 @@ const MENU=[
  {n:'roasted persimmon matcha latte',d:'homemade persimmon syrup, salted vanilla cold foam',p:3},
  {n:'banana bread matcha latte',d:'cinnamon banana milk, salted vanilla cold foam',p:3},
  {n:'creamy peach oolong tea',d:'oolong cold brew, preserved peaches, coconut milk, sago',p:2},
- {n:'thai tea martini',d:'thai tea, vodka, condensed milk (21+, price at pickup)',p:null},
+ {n:'thai tea martini',d:'thai tea, vodka, condensed milk',p:null},
  'rule',
  {n:'matcha banana pudding',d:'',p:1.5},
  {n:'fig & brie autumn puff',d:'',p:1.5}
@@ -145,7 +145,8 @@ $('send').addEventListener('click',async()=>{
 });
 const esc=t=>String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 function showReceipt(o){
-  $('s3').remove();
+  $('s3').remove();$('s1').remove();
+  document.querySelector('main h1').remove();document.querySelector('main > p').remove();
   $('s2').innerHTML=`<h2>order placed</h2><div class="receipt"><img src="${o.selfie}" alt="Your selfie">
   <h3>${esc(o.name)}</h3><div class="meta">order #${o.id}<br>${esc(o.when)}</div>
   <ul>${o.items.map(i=>`<li>${i.qty} × ${esc(i.name)}</li>`).join('')}</ul>
