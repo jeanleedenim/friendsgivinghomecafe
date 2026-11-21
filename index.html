@@ -151,26 +151,7 @@ function showReceipt(o){
   <ul>${o.items.map(i=>`<li>${i.qty} × ${esc(i.name)}</li>`).join('')}</ul>
   <div class="tot"><span>Total</span><span>$${o.tot.toFixed(2)}</span></div>
   <div class="note">Show this receipt to pick up your order. Your aura gets checked before your gift card is sent.</div>
-  <div class="note">Pay on Venmo: <a href="https://venmo.com/u/amber-le-2103" target="_blank" rel="noopener">venmo.com/u/amber-le-2103</a><br>Include order #${o.id} in the note.</div></div>
-  <button id="save">Save receipt as image</button>`;
-  $('save').onclick=()=>saveImage(o);
-}
-async function saveImage(o){
-  await Promise.all([document.fonts.load('700 40px Gaegu'),document.fonts.load('16px "DM Mono"')]);
-  const W=700,H=620+o.items.length*34,c=document.createElement('canvas');c.width=W;c.height=H;
-  const x=c.getContext('2d');x.fillStyle='#1b4a8f';x.fillRect(0,0,W,H);
-  x.fillStyle='#fff';x.beginPath();x.roundRect(30,30,W-60,H-60,24);x.fill();
-  const img=new Image();img.src=o.selfie;await img.decode();
-  x.save();x.beginPath();x.arc(W/2,150,80,0,7);x.clip();
-  const m=Math.min(img.width,img.height);x.drawImage(img,(img.width-m)/2,(img.height-m)/2,m,m,W/2-80,70,160,160);x.restore();
-  x.fillStyle='#14305c';x.textAlign='center';
-  x.font='700 52px Gaegu';x.fillText(o.name,W/2,290);
-  x.font='18px "DM Mono"';x.fillText('order #'+o.id+'  '+o.when,W/2,325);
-  x.textAlign='left';let y=380;
-  o.items.forEach(i=>{x.fillText(i.qty+' × '+i.name,70,y);y+=34;});
-  y+=20;x.fillText('Total',70,y);x.textAlign='right';x.fillText('$'+o.tot.toFixed(2),W-70,y);
-  x.textAlign='center';x.fillText('venmo.com/u/amber-le-2103',W/2,y+50);
-  const a=document.createElement('a');a.download='receipt-'+o.id+'.png';a.href=c.toDataURL('image/png');a.click();
+  <div class="note">Pay on Venmo: <a href="https://venmo.com/u/amber-le-2103" target="_blank" rel="noopener">venmo.com/u/amber-le-2103</a><br>Include order #${o.id} in the note.</div></div>`;
 }
 </script>
 </body>
