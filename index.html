@@ -54,10 +54,10 @@ input[type=file]{position:absolute;opacity:0;width:1px;height:1px}
   <p>Three quick steps: make your aura, build your order, then take a selfie to get your receipt. Pay with Venmo after.</p>
 
   <section id="s1">
-    <h2>1. make your aura</h2>
-    <p>Create your aura, then invite 5 friends to make theirs. Invite 5 and you get a $25 gift card. Gift cards are limited to $500 total.</p>
+    <h2>1. do you have aura?</h2>
+    <p>No? Create it below, then invite 5 friends to make theirs and get a $25 gift card. We're giving out up to $500 in gift cards total, and we'll check your aura.</p>
     <a class="btn" href="https://comparewithmesf.com" target="_blank" rel="noopener">Create my aura</a>
-    <label class="check"><input type="checkbox" id="aura"> <span>I created my aura and invited 5 friends. I know you'll check.</span></label>
+    <label class="check"><input type="checkbox" id="aura"> <span>Yes, I have my aura and invited 5 friends.</span></label>
   </section>
 
   <section id="s2" class="locked" aria-disabled="true">
@@ -150,7 +150,7 @@ function showReceipt(o){
   <h3>${esc(o.name)}</h3><div class="meta">order #${o.id}<br>${esc(o.when)}</div>
   <ul>${o.items.map(i=>`<li>${i.qty} × ${esc(i.name)}</li>`).join('')}</ul>
   <div class="tot"><span>Total</span><span>$${o.tot.toFixed(2)}</span></div>
-  <div class="note">Show this receipt to pick up your order. Aura invites get checked before your gift card is sent.</div>
+  <div class="note">Show this receipt to pick up your order. Your aura gets checked before your gift card is sent.</div>
   <div class="note">Pay on Venmo: <a href="https://venmo.com/u/amber-le-2103" target="_blank" rel="noopener">venmo.com/u/amber-le-2103</a><br>Include order #${o.id} in the note.</div></div>
   <button id="save">Save receipt as image</button>`;
   $('save').onclick=()=>saveImage(o);
